@@ -8,34 +8,47 @@ const PHONE = "+201123466035"
 const WA = "https://wa.me/201123466035"
 const EMAIL = "apkzoz85@gmail.com"
 
-// ── Countdown Timer ─────────────────────────────────
+// ── Countdown ────────────────────────────────────────
 function useCountdown() {
-  const getTarget = () => {
-    if (typeof window === "undefined") return new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
-    const stored = localStorage.getItem("ced_offer_end")
-    if (stored) return new Date(stored)
-    const target = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
-    localStorage.setItem("ced_offer_end", target.toISOString())
-    return target
-  }
   const [time, setTime] = useState({ d:0, h:0, m:0, s:0 })
+  const [mounted, setMounted] = useState(false)
   useEffect(() => {
-    const target = getTarget()
+    setMounted(true)
+    let target: Date
+    try {
+      const stored = localStorage.getItem("ced_offer_end")
+      target = stored ? new Date(stored) : (() => {
+        const t = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+        localStorage.setItem("ced_offer_end", t.toISOString())
+        return t
+      })()
+    } catch { target = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) }
     const tick = () => {
       const diff = target.getTime() - Date.now()
-      if (diff <= 0) { setTime({ d:0, h:0, m:0, s:0 }); return }
-      setTime({
-        d: Math.floor(diff / 86400000),
-        h: Math.floor((diff % 86400000) / 3600000),
-        m: Math.floor((diff % 3600000) / 60000),
-        s: Math.floor((diff % 60000) / 1000),
-      })
+      if (diff <= 0) return
+      setTime({ d: Math.floor(diff/86400000), h: Math.floor((diff%86400000)/3600000), m: Math.floor((diff%3600000)/60000), s: Math.floor((diff%60000)/1000) })
     }
-    tick()
-    const id = setInterval(tick, 1000)
-    return () => clearInterval(id)
+    tick(); const id = setInterval(tick, 1000); return () => clearInterval(id)
   }, [])
-  return time
+  return { ...time, mounted }
+}
+
+function TimeBox({ v, l, mounted }: { v: number; l: string; mounted: boolean }) {
+  return (
+    <div className="border border-white/15 px-4 py-3 text-center min-w-[56px]">
+      <div className="text-2xl font-black text-white tabular-nums">{mounted ? String(v).padStart(2,"0") : "--"}</div>
+      <div className="text-[10px] text-white/30 mt-0.5">{l}</div>
+    </div>
+  )
+}
+
+function TimeBoxDark({ v, l, mounted }: { v: number; l: string; mounted: boolean }) {
+  return (
+    <div className="bg-white/5 border border-white/10 py-3 text-center">
+      <div className="text-xl font-black text-white tabular-nums">{mounted ? String(v).padStart(2,"0") : "--"}</div>
+      <div className="text-xs text-white/40 mt-0.5">{l}</div>
+    </div>
+  )
 }
 
 // ── Lead Form ────────────────────────────────────────
@@ -44,23 +57,17 @@ function LeadForm({ subject, dark=false }: { subject: string; dark?: boolean }) 
   const [loading, setLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
-
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault(); setLoading(true)
     try {
       const res = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ ...form, _subject: subject, _captcha: "false", _template: "table" }),
+        method:"POST", headers:{"Content-Type":"application/json",Accept:"application/json"},
+        body: JSON.stringify({...form, _subject: subject, _captcha:"false", _template:"table"}),
       })
-      if (res.ok) router.push("/thank-you")
-      else throw new Error()
-    } catch { toast({ title: "خطأ", variant: "destructive" }); setLoading(false) }
+      if (res.ok) router.push("/thank-you"); else throw new Error()
+    } catch { toast({title:"خطأ",variant:"destructive"}); setLoading(false) }
   }
-
-  const inp = `w-full bg-transparent border-0 border-b py-3 text-sm outline-none transition-colors ${dark ? "border-white/25 text-white placeholder:text-white/35 focus:border-white" : "border-border text-foreground placeholder:text-muted-foreground focus:border-primary"}`
-
+  const inp = `w-full bg-transparent border-0 border-b py-3 text-sm outline-none transition-colors ${dark?"border-white/25 text-white placeholder:text-white/35 focus:border-white":"border-border text-foreground placeholder:text-muted-foreground focus:border-primary"}`
   return (
     <form onSubmit={submit} className="space-y-1">
       <input placeholder="الاسم الكريم *" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} required className={inp} />
@@ -68,15 +75,15 @@ function LeadForm({ subject, dark=false }: { subject: string; dark?: boolean }) 
       <input type="tel" placeholder="رقم الهاتف *" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} required className={inp} dir="ltr" />
       <div className="h-2"/>
       <select value={form.project} onChange={e=>setForm({...form,project:e.target.value})}
-        className={`w-full bg-transparent border-0 border-b py-3 text-sm outline-none cursor-pointer ${dark ? "border-white/25 text-white/50" : "border-border text-muted-foreground"}`}>
+        className={`w-full bg-transparent border-0 border-b py-3 text-sm outline-none cursor-pointer ${dark?"border-white/25 text-white/50":"border-border text-muted-foreground"}`}>
         <option value="">اختر المشروع</option>
-        <option value="العالمين">العالمين — العاصمة الإدارية</option>
-        <option value="جاردن سيتي العاصمة">جاردن سيتي العاصمة</option>
-        <option value="المقصد">المقصد — العاصمة الإدارية</option>
+        <option value="العالمين">العالمين — العاصمة الإدارية | من 3.5 مليون جنيه</option>
+        <option value="جاردن سيتي العاصمة">جاردن سيتي العاصمة | من 2.8 مليون جنيه</option>
+        <option value="المقصد">المقصد — العاصمة الإدارية | من 4.2 مليون جنيه</option>
       </select>
       <div className="h-4"/>
       <button type="submit" disabled={loading}
-        className={`w-full py-4 text-sm font-black tracking-widest uppercase transition-opacity hover:opacity-85 ${dark ? "bg-white text-primary" : "bg-primary text-white"}`}>
+        className={`w-full py-4 text-sm font-black tracking-widest transition-opacity hover:opacity-85 ${dark?"bg-white text-primary":"bg-primary text-white"}`}>
         {loading ? "..." : "احجز استشارة مجانية"}
       </button>
     </form>
@@ -84,61 +91,48 @@ function LeadForm({ subject, dark=false }: { subject: string; dark?: boolean }) 
 }
 
 // ── Popup ────────────────────────────────────────────
-function Popup({ time, onClose }: { time: {d:number;h:number;m:number;s:number}; onClose: ()=>void }) {
-  const router = useRouter()
-  const { toast } = useToast()
-  const [form, setForm] = useState({ name:"", phone:"" })
+function Popup({ d,h,m,s,mounted, onClose }: { d:number;h:number;m:number;s:number;mounted:boolean; onClose:()=>void }) {
+  const router = useRouter(); const { toast } = useToast()
+  const [form, setForm] = useState({name:"",phone:""})
   const [loading, setLoading] = useState(false)
-
   const submit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
+    e.preventDefault(); setLoading(true)
     try {
       const res = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ ...form, _subject: "ليد بوب اب — City Edge", _captcha: "false", _template: "table" }),
+        method:"POST", headers:{"Content-Type":"application/json",Accept:"application/json"},
+        body: JSON.stringify({...form, _subject:"ليد بوب اب — City Edge", _captcha:"false", _template:"table"}),
       })
-      if (res.ok) { onClose(); router.push("/thank-you") }
-      else throw new Error()
-    } catch { toast({ title: "خطأ", variant: "destructive" }); setLoading(false) }
+      if (res.ok) { onClose(); router.push("/thank-you") } else throw new Error()
+    } catch { toast({title:"خطأ",variant:"destructive"}); setLoading(false) }
   }
-
   return (
-    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" style={{background:"rgba(0,0,0,0.7)", backdropFilter:"blur(4px)"}}>
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" style={{background:"rgba(0,0,0,0.75)",backdropFilter:"blur(4px)"}}>
       <div className="bg-white w-full max-w-md relative overflow-hidden shadow-2xl">
-        {/* Top bar */}
         <div className="bg-primary px-6 py-4 text-white">
-          <button onClick={onClose} className="absolute top-3 left-4 text-white/60 hover:text-white text-xl leading-none">✕</button>
-          <p className="text-xs font-bold tracking-widest uppercase text-white/60 mb-1">🔥 عرض لفترة محدودة</p>
-          <h2 className="text-lg font-black leading-tight">أسعار حصرية على مشاريع<br/>City Edge</h2>
+          <button onClick={onClose} className="absolute top-3 left-4 text-white/60 hover:text-white text-xl">✕</button>
+          <p className="text-xs font-bold tracking-widest text-white/60 mb-1">🔥 عرض لفترة محدودة</p>
+          <h2 className="text-lg font-black">أسعار حصرية على مشاريع<br/>City Edge</h2>
         </div>
-        {/* Countdown */}
-        <div className="bg-foreground px-6 py-4 grid grid-cols-4 gap-2 text-center">
-          {[{v:time.d,l:"يوم"},{v:time.h,l:"ساعة"},{v:time.m,l:"دقيقة"},{v:time.s,l:"ثانية"}].map((t,i)=>(
-            <div key={i} className="bg-white/5 border border-white/10 py-2">
-              <div className="text-2xl font-black text-white" style={{fontVariantNumeric:"tabular-nums"}}>{String(t.v).padStart(2,"0")}</div>
-              <div className="text-xs text-white/40 mt-0.5">{t.l}</div>
-            </div>
+        <div className="bg-foreground px-6 py-4 grid grid-cols-4 gap-2">
+          {[{v:d,l:"يوم"},{v:h,l:"ساعة"},{v:m,l:"دقيقة"},{v:s,l:"ثانية"}].map((t,i)=>(
+            <TimeBoxDark key={i} v={t.v} l={t.l} mounted={mounted} />
           ))}
         </div>
-        {/* Projects pills */}
         <div className="px-6 pt-4 pb-2 flex flex-wrap gap-2">
-          {["🏙️ العالمين","🌿 جاردن سيتي العاصمة","🏛️ المقصد"].map((p,i)=>(
+          {["🏙️ العالمين — من 3.5M","🌿 جاردن سيتي — من 2.8M","🏛️ المقصد — من 4.2M"].map((p,i)=>(
             <span key={i} className="border border-primary/20 text-primary text-xs font-bold px-3 py-1.5">{p}</span>
           ))}
         </div>
-        {/* Form */}
         <div className="px-6 pb-6">
           <p className="text-xs text-muted-foreground mb-4">سجل اهتمامك الآن وسيتواصل معك مستشارنا خلال ٢٤ ساعة</p>
           <form onSubmit={submit} className="space-y-1">
             <input placeholder="الاسم الكريم *" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} required
-              className="w-full border-0 border-b border-border py-3 text-sm outline-none focus:border-primary bg-transparent text-foreground placeholder:text-muted-foreground" />
+              className="w-full border-0 border-b border-border py-3 text-sm outline-none focus:border-primary bg-transparent placeholder:text-muted-foreground" />
             <div className="h-2"/>
             <input type="tel" placeholder="رقم الهاتف *" value={form.phone} onChange={e=>setForm({...form,phone:e.target.value})} required
               className="w-full border-0 border-b border-border py-3 text-sm outline-none focus:border-primary bg-transparent" dir="ltr" />
             <div className="h-4"/>
-            <button type="submit" disabled={loading} className="w-full py-3.5 bg-primary text-white text-sm font-black tracking-widest hover:opacity-85 transition-opacity">
+            <button type="submit" disabled={loading} className="w-full py-3.5 bg-primary text-white text-sm font-black hover:opacity-85 transition-opacity">
               {loading ? "..." : "احجز الآن — العرض ينتهي قريباً"}
             </button>
           </form>
@@ -154,48 +148,48 @@ function Popup({ time, onClose }: { time: {d:number;h:number;m:number;s:number};
 }
 
 // ── Project Section ──────────────────────────────────
-function ProjectSection({ id, num, name, location, desc, price, payment, img, details, features, bgDark=false }:
-  { id:string; num:string; name:string; location:string; desc:string; price:string; payment:string; img:string; details:{k:string;v:string}[]; features:string[]; bgDark?:boolean }) {
-  const waMsg = encodeURIComponent(`مرحباً، أنا مهتم بمشروع ${name} من City Edge وأريد معرفة التفاصيل`)
+function ProjectSection({ id, num, name, location, desc, price, payment, img, img2, img3, details, features, bgDark=false }:
+  { id:string;num:string;name:string;location:string;desc:string;price:string;payment:string;img:string;img2?:string;img3?:string;details:{k:string;v:string}[];features:string[];bgDark?:boolean }) {
+  const waMsg = encodeURIComponent(`مرحباً، أنا مهتم بمشروع ${name} من City Edge وأريد معرفة التفاصيل والأسعار`)
+  const bg = bgDark ? "bg-foreground" : "bg-white"
+  const tc = (base: string) => bgDark ? base.replace("text-foreground","text-white").replace("text-muted-foreground","text-white/40").replace("border-border","border-white/10") : base
   return (
-    <section id={id} className={bgDark ? "bg-foreground" : "bg-white"}>
+    <section id={id} className={bg}>
       {/* Banner */}
-      <div className={`px-6 lg:px-12 py-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b relative overflow-hidden ${bgDark ? "bg-foreground border-white/10" : "bg-secondary border-border"}`}>
+      <div className={`px-6 lg:px-12 py-6 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 border-b relative overflow-hidden ${bgDark?"border-white/10":"border-border bg-secondary"}`}>
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-          <span className="text-[8rem] font-black tracking-widest whitespace-nowrap" style={{color: bgDark ? "rgba(255,255,255,0.03)" : "rgba(0,0,0,0.03)"}}>{name}</span>
+          <span className="text-[8rem] font-black tracking-widest whitespace-nowrap" style={{color:bgDark?"rgba(255,255,255,0.03)":"rgba(0,0,0,0.03)"}}>{name}</span>
         </div>
         <div className="relative">
-          <p className={`text-xs font-bold tracking-widest uppercase mb-1 ${bgDark ? "text-primary/80" : "text-primary"}`}>{num}</p>
-          <h2 className={`text-2xl lg:text-3xl font-black ${bgDark ? "text-white" : "text-foreground"}`}>{name}</h2>
+          <p className="text-xs font-bold tracking-widest uppercase text-primary mb-1">{num}</p>
+          <h2 className={`text-2xl lg:text-3xl font-black ${bgDark?"text-white":"text-foreground"}`}>{name}</h2>
         </div>
         <div className="flex gap-8 relative">
           {[{v:price,l:"يبدأ السعر من"},{v:payment,l:"خطة السداد"}].map((s,i)=>(
             <div key={i} className="text-right">
               <div className="text-base font-black text-primary">{s.v}</div>
-              <div className={`text-xs tracking-wide mt-0.5 ${bgDark ? "text-white/30" : "text-muted-foreground"}`}>{s.l}</div>
+              <div className={`text-xs mt-0.5 ${bgDark?"text-white/30":"text-muted-foreground"}`}>{s.l}</div>
             </div>
           ))}
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 min-h-[75vh]">
-        {/* Image */}
         <div className="relative overflow-hidden min-h-[55vw] lg:min-h-0">
           <img src={img} alt={name} className="w-full h-full object-cover absolute inset-0 hover:scale-105 transition-transform duration-700" />
-          <div className="absolute inset-0" style={{background:"linear-gradient(to top, rgba(0,0,0,.5) 0%, transparent 50%)"}} />
+          <div className="absolute inset-0" style={{background:"linear-gradient(to top,rgba(0,0,0,.5) 0%,transparent 50%)"}} />
         </div>
-        {/* Content */}
-        <div className={`flex flex-col justify-center px-8 lg:px-14 py-14 ${bgDark ? "bg-foreground" : "bg-white"}`}>
+        <div className={`flex flex-col justify-center px-8 lg:px-14 py-14 ${bg}`}>
           <p className="text-primary text-xs font-bold tracking-widest uppercase mb-4">City Edge Developments</p>
-          <h3 className={`text-3xl font-black leading-tight mb-2 ${bgDark ? "text-white" : "text-foreground"}`}>{name}</h3>
-          <p className={`text-xs tracking-widest uppercase mb-6 ${bgDark ? "text-white/30" : "text-muted-foreground"}`}>{location}</p>
+          <h3 className={`text-3xl font-black leading-tight mb-2 ${bgDark?"text-white":"text-foreground"}`}>{name}</h3>
+          <p className={`text-xs tracking-widest uppercase mb-6 ${bgDark?"text-white/30":"text-muted-foreground"}`}>{location}</p>
           <div className="w-8 h-px bg-primary mb-6" />
-          <p className={`text-sm leading-relaxed mb-8 ${bgDark ? "text-white/50" : "text-muted-foreground"}`}>{desc}</p>
+          <p className={`text-sm leading-relaxed mb-8 ${bgDark?"text-white/50":"text-muted-foreground"}`}>{desc}</p>
           <div className="mb-8">
             {details.map((d,i)=>(
-              <div key={i} className={`flex justify-between py-3 border-b ${bgDark ? "border-white/8" : "border-border"}`}>
-                <span className={`text-sm font-bold ${bgDark ? "text-white" : "text-foreground"}`}>{d.v}</span>
-                <span className={`text-xs ${bgDark ? "text-white/30" : "text-muted-foreground"}`}>{d.k}</span>
+              <div key={i} className={`flex justify-between py-3 border-b ${bgDark?"border-white/8":"border-border"}`}>
+                <span className={`text-sm font-bold ${bgDark?"text-white":"text-foreground"}`}>{d.v}</span>
+                <span className={`text-xs ${bgDark?"text-white/30":"text-muted-foreground"}`}>{d.k}</span>
               </div>
             ))}
           </div>
@@ -206,24 +200,34 @@ function ProjectSection({ id, num, name, location, desc, price, payment, img, de
           </div>
           <div className="flex gap-3">
             <a href={`${WA}?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
-              className="flex-1 py-3 bg-green-500 text-white text-xs font-black text-center tracking-widest hover:opacity-85 transition-opacity">💬 واتساب</a>
+              className="flex-1 py-3 bg-green-500 text-white text-xs font-black text-center hover:opacity-85 transition-opacity">💬 واتساب</a>
             <a href={`tel:${PHONE}`}
-              className={`flex-1 py-3 text-xs font-black text-center tracking-widest border transition-colors ${bgDark ? "border-white/20 text-white hover:bg-white/10" : "border-primary text-primary hover:bg-primary hover:text-white"}`}>
+              className={`flex-1 py-3 text-xs font-black text-center border transition-colors ${bgDark?"border-white/20 text-white hover:bg-white/10":"border-primary text-primary hover:bg-primary hover:text-white"}`}>
               📞 اتصل الآن
             </a>
           </div>
         </div>
       </div>
 
+      {/* Gallery strip */}
+      {(img2 || img3) && (
+        <div className="grid grid-cols-2 h-52 gap-0.5">
+          {[img2,img3].filter(Boolean).map((src,i)=>(
+            <div key={i} className="overflow-hidden">
+              <img src={src!} alt={`${name} ${i+2}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+            </div>
+          ))}
+        </div>
+      )}
+
       {/* Register row */}
-      <div className={`px-6 lg:px-12 py-12 border-t ${bgDark ? "border-white/10 bg-foreground" : "border-border bg-secondary/50"}`}>
+      <div className={`px-6 lg:px-12 py-12 border-t ${bgDark?"border-white/10":"border-border bg-secondary/50"}`}>
         <div className="max-w-6xl mx-auto grid lg:grid-cols-2 gap-14">
           <div>
-            <h3 className={`text-xl font-black mb-3 ${bgDark ? "text-white" : "text-foreground"}`}>سجّل بياناتك</h3>
-            <p className={`text-sm leading-relaxed mb-5 ${bgDark ? "text-white/40" : "text-muted-foreground"}`}>
-              تواصل معنا اليوم وسيتصل بك مستشارنا العقاري لتزويدك بكل التفاصيل والأسعار الحصرية. فريقنا متاح ٢٤ ساعة.
+            <h3 className={`text-xl font-black mb-3 ${bgDark?"text-white":"text-foreground"}`}>سجّل بياناتك</h3>
+            <p className={`text-sm leading-relaxed mb-5 ${bgDark?"text-white/40":"text-muted-foreground"}`}>
+              تواصل معنا اليوم وسيتصل بك مستشارنا لتزويدك بأحدث الأسعار والعروض الحصرية. فريقنا متاح ٢٤ ساعة.
             </p>
-            <p className={`text-sm font-black mb-4 ${bgDark ? "text-white" : "text-foreground"}`}>تواصل للمزيد</p>
             <div className="flex gap-3">
               <a href={`${WA}?text=${waMsg}`} target="_blank" rel="noopener noreferrer"
                 className="w-10 h-10 bg-green-500 flex items-center justify-center hover:opacity-85 transition-opacity">
@@ -245,7 +249,7 @@ function ProjectSection({ id, num, name, location, desc, price, payment, img, de
 export default function Home() {
   const [scrolled, setScrolled] = useState(false)
   const [showPopup, setShowPopup] = useState(false)
-  const time = useCountdown()
+  const { d, h, m, s, mounted } = useCountdown()
 
   useEffect(()=>{
     const fn = ()=>setScrolled(window.scrollY>40)
@@ -254,54 +258,61 @@ export default function Home() {
   },[])
 
   useEffect(()=>{
-    if (typeof window === "undefined") return
-    const seen = sessionStorage.getItem("ced_popup_seen")
-    if (!seen) {
-      const t = setTimeout(()=>{ setShowPopup(true); sessionStorage.setItem("ced_popup_seen","1") }, 3500)
-      return ()=>clearTimeout(t)
-    }
+    try {
+      if (!sessionStorage.getItem("ced_popup_seen")) {
+        const t = setTimeout(()=>{ setShowPopup(true); sessionStorage.setItem("ced_popup_seen","1") }, 3500)
+        return ()=>clearTimeout(t)
+      }
+    } catch {}
   },[])
 
   const scroll = (id:string)=>document.getElementById(id)?.scrollIntoView({behavior:"smooth"})
+
+  // Real City Edge images
+  const HERO_IMG = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/11/new-capital-3.webp"
+  const ALAMEIN_1 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/12/Al-Alamein-1.webp"
+  const ALAMEIN_2 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/12/Al-Alamein-2.webp"
+  const GARDEN_1 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2025/05/garden-city-capital-1.webp"
+  const GARDEN_2 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2025/05/garden-city-capital-2.webp"
+  const MAQSAD_1 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/11/new-capital-3.webp"
+  const MAQSAD_2 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/11/new-capital-2.webp"
 
   return (
     <>
       <Toaster />
 
-      {/* Popup */}
-      {showPopup && <Popup time={time} onClose={()=>setShowPopup(false)} />}
+      {showPopup && <Popup d={d} h={h} m={m} s={s} mounted={mounted} onClose={()=>setShowPopup(false)} />}
 
       {/* Announcement Bar */}
       <div className="fixed top-0 inset-x-0 z-[60] bg-primary text-white py-2.5 px-4 flex items-center justify-between gap-3 text-xs font-bold">
         <span>🔥 عروض حصرية لفترة محدودة على مشاريع City Edge</span>
         <div className="flex items-center gap-1.5 font-black tabular-nums">
-          <span className="bg-white/15 px-2 py-0.5">{String(time.d).padStart(2,"0")}ي</span>
-          <span className="opacity-60">:</span>
-          <span className="bg-white/15 px-2 py-0.5">{String(time.h).padStart(2,"0")}س</span>
-          <span className="opacity-60">:</span>
-          <span className="bg-white/15 px-2 py-0.5">{String(time.m).padStart(2,"0")}د</span>
-          <span className="opacity-60">:</span>
-          <span className="bg-white/15 px-2 py-0.5">{String(time.s).padStart(2,"0")}ث</span>
-          <button onClick={()=>setShowPopup(true)} className="mr-3 bg-white text-primary px-3 py-0.5 font-black text-xs hover:opacity-90 transition-opacity">
+          {[{v:d,l:"ي"},{v:h,l:"س"},{v:m,l:"د"},{v:s,l:"ث"}].map((t,i)=>(
+            <React.Fragment key={i}>
+              {i>0 && <span className="opacity-40">:</span>}
+              <span className="bg-white/15 px-2 py-0.5">{mounted ? String(t.v).padStart(2,"0") : "--"}{t.l}</span>
+            </React.Fragment>
+          ))}
+          <button onClick={()=>setShowPopup(true)} className="mr-3 bg-white text-primary px-3 py-0.5 font-black hover:opacity-90 transition-opacity">
             احجز الآن
           </button>
         </div>
       </div>
 
       {/* NAV */}
-      <nav className={`fixed top-8 inset-x-0 z-50 h-16 flex items-center px-5 lg:px-10 justify-between transition-all duration-300 ${scrolled ? "bg-white/97 backdrop-blur-lg border-b border-border shadow-sm" : "bg-transparent"}`}>
+      <nav className={`fixed top-8 inset-x-0 z-50 h-16 flex items-center px-5 lg:px-10 justify-between transition-all duration-300 ${scrolled?"bg-white/97 backdrop-blur-lg border-b border-border shadow-sm":"bg-transparent"}`}>
         <div className="flex flex-col leading-none">
-          <span className={`text-lg font-black tracking-widest transition-colors ${scrolled ? "text-primary" : "text-white"}`}>City Edge</span>
-          <span className={`text-[10px] tracking-widest font-semibold transition-colors ${scrolled ? "text-muted-foreground" : "text-white/50"}`}>DEVELOPMENTS</span>
+          <span className={`text-lg font-black tracking-widest transition-colors ${scrolled?"text-primary":"text-white"}`}>City Edge</span>
+          <span className={`text-[10px] tracking-widest font-semibold transition-colors ${scrolled?"text-muted-foreground":"text-white/50"}`}>DEVELOPMENTS</span>
         </div>
         <nav className="hidden lg:flex gap-8">
           {[["العالمين","alamein"],["جاردن سيتي","garden"],["المقصد","maqsad"],["تواصل","contact"]].map(([l,id])=>(
             <button key={id} onClick={()=>scroll(id)}
-              className={`text-xs font-bold tracking-wide transition-colors ${scrolled ? "text-muted-foreground hover:text-primary" : "text-white/60 hover:text-white"}`}>{l}</button>
+              className={`text-xs font-bold tracking-wide transition-colors ${scrolled?"text-muted-foreground hover:text-primary":"text-white/60 hover:text-white"}`}>{l}</button>
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <a href={`tel:${PHONE}`} className={`hidden sm:block text-sm font-black transition-colors ${scrolled ? "text-foreground" : "text-white"}`} dir="ltr">01123466035</a>
+          <a href={`tel:${PHONE}`} className={`hidden sm:block text-sm font-black transition-colors ${scrolled?"text-foreground":"text-white"}`} dir="ltr">01123466035</a>
           <button onClick={()=>setShowPopup(true)} className="bg-primary text-white px-5 py-2.5 text-xs font-black tracking-widest hover:opacity-85 transition-opacity">
             احجز الآن
           </button>
@@ -311,13 +322,12 @@ export default function Home() {
       {/* HERO */}
       <section className="relative min-h-screen flex items-end overflow-hidden" style={{paddingTop:32}}>
         <div className="absolute inset-0">
-          <img src="https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/11/new-capital-3.webp" alt="City Edge" className="w-full h-full object-cover" />
-          <div className="absolute inset-0" style={{background:"linear-gradient(to top, rgba(10,20,50,.95) 0%, rgba(10,20,50,.55) 50%, rgba(10,20,50,.25) 100%)"}} />
+          <img src={HERO_IMG} alt="City Edge" className="w-full h-full object-cover" />
+          <div className="absolute inset-0" style={{background:"linear-gradient(to top,rgba(10,20,50,.95) 0%,rgba(10,20,50,.55) 50%,rgba(10,20,50,.2) 100%)"}} />
           <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
             <span className="text-[10rem] font-black tracking-widest whitespace-nowrap" style={{color:"rgba(255,255,255,0.04)"}}>CITY EDGE</span>
           </div>
         </div>
-
         <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-12 pb-16 lg:pb-20 pt-28">
           <div className="grid lg:grid-cols-2 gap-16 items-end">
             <div>
@@ -332,31 +342,25 @@ export default function Home() {
                 ٣ مشاريع<br/><span className="font-light text-white/50">بأسعار</span><br/>استثنائية
               </h1>
               <p className="text-white/50 text-sm leading-relaxed mb-8 max-w-md">
-                العالمين، جاردن سيتي العاصمة، والمقصد — مشاريع متميزة من City Edge Developments في أرقى مناطق القاهرة الجديدة والعاصمة الإدارية.
+                العالمين، جاردن سيتي العاصمة، والمقصد — مشاريع متميزة من City Edge في أرقى مناطق العاصمة الإدارية الجديدة.
               </p>
-              {/* Projects pills */}
               <div className="flex flex-wrap gap-3 mb-10">
-                {[{n:"العالمين",id:"alamein"},{n:"جاردن سيتي العاصمة",id:"garden"},{n:"المقصد",id:"maqsad"}].map(p=>(
+                {[{n:"العالمين — من 3.5M",id:"alamein"},{n:"جاردن سيتي — من 2.8M",id:"garden"},{n:"المقصد — من 4.2M",id:"maqsad"}].map(p=>(
                   <button key={p.id} onClick={()=>scroll(p.id)}
                     className="border border-white/20 text-white/70 px-4 py-2 text-xs font-bold hover:border-primary hover:text-primary transition-colors">
                     {p.n}
                   </button>
                 ))}
               </div>
-              {/* Countdown in hero */}
               <div className="border-t border-white/10 pt-6">
                 <p className="text-white/30 text-xs mb-3 tracking-widest">ينتهي العرض خلال</p>
-                <div className="flex gap-3">
-                  {[{v:time.d,l:"يوم"},{v:time.h,l:"ساعة"},{v:time.m,l:"دقيقة"},{v:time.s,l:"ثانية"}].map((t,i)=>(
-                    <div key={i} className="border border-white/15 px-4 py-3 text-center min-w-[64px]">
-                      <div className="text-2xl font-black text-white" style={{fontVariantNumeric:"tabular-nums"}}>{String(t.v).padStart(2,"0")}</div>
-                      <div className="text-[10px] text-white/30 mt-0.5">{t.l}</div>
-                    </div>
+                <div className="flex gap-2">
+                  {[{v:d,l:"يوم"},{v:h,l:"ساعة"},{v:m,l:"دقيقة"},{v:s,l:"ثانية"}].map((t,i)=>(
+                    <TimeBox key={i} v={t.v} l={t.l} mounted={mounted} />
                   ))}
                 </div>
               </div>
             </div>
-            {/* Hero Form */}
             <div className="bg-white/5 backdrop-blur-md border border-white/15 p-8">
               <h2 className="text-white text-lg font-black mb-1">احجز استشارة مجانية</h2>
               <p className="text-white/40 text-xs mb-6">سيتواصل معك مستشارنا خلال ٢٤ ساعة</p>
@@ -375,32 +379,36 @@ export default function Home() {
       <ProjectSection
         id="alamein" num="٠١ — العاصمة الإدارية الجديدة"
         name="العالمين" location="العاصمة الإدارية الجديدة — R7"
-        desc="العالمين هو مشروع سكني فاخر من City Edge في قلب العاصمة الإدارية الجديدة. يجمع بين الطراز المعماري المتميز والموقع الاستراتيجي في المنطقة السكنية R7. وحدات متنوعة بين الشقق والتاون هاوس بتشطيبات راقية."
-        price="تواصل للسعر" payment="تسهيلات مرنة"
-        img="https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/11/new-capital-3.webp"
+        desc="العالمين هو مشروع سكني فاخر من City Edge في قلب العاصمة الإدارية الجديدة. يقع في المنطقة السكنية R7 ويقدم وحدات متنوعة بتشطيبات راقية ومساحات خضراء واسعة. مشروع متكامل الخدمات مع موقف سيارات وأمن ٢٤ ساعة."
+        price="من 3,500,000 جنيه" payment="10% مقدم / 8 سنوات"
+        img={ALAMEIN_1} img2={ALAMEIN_2}
         details={[
           {k:"الموقع",v:"العاصمة الإدارية — R7"},
           {k:"المطور",v:"City Edge Developments"},
-          {k:"الوحدات",v:"شقق • تاون هاوس • دوبلكس"},
-          {k:"التشطيب",v:"تشطيب كامل راقي"},
+          {k:"الوحدات",v:"شقق • دوبلكس • بنتهاوس"},
+          {k:"المساحات",v:"من 100 م² — 300 م²"},
+          {k:"التشطيب",v:"سوبر لوكس — كامل"},
+          {k:"خطة السداد",v:"10% مقدم — حتى 8 سنوات"},
         ]}
-        features={["موقع متميز R7","تشطيب راقي","مناطق خضراء","أمن وحراسة ٢٤/٧","نادي اجتماعي","مواصفات دولية"]}
+        features={["موقع R7 المتميز","تشطيب سوبر لوكس","مساحات خضراء","أمن ٢٤/٧","نادي اجتماعي","حمامات سباحة","موقف سيارات","قريب من الحي الحكومي"]}
       />
 
       {/* GARDEN CITY */}
       <ProjectSection
         id="garden" num="٠٢ — العاصمة الإدارية الجديدة"
         name="جاردن سيتي العاصمة" location="العاصمة الإدارية الجديدة"
-        desc="جاردن سيتي العاصمة من City Edge — مجتمع سكني متكامل يوفر بيئة خضراء وهادئة وسط العاصمة الإدارية. يتميز بالتصميم المعماري الفريد والمساحات الخضراء الواسعة والخدمات المتكاملة."
-        price="تواصل للسعر" payment="مرونة في السداد"
-        img="https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/11/new-capital-3.webp"
+        desc="جاردن سيتي العاصمة من City Edge — مجتمع سكني متكامل يوفر بيئة خضراء راقية في قلب العاصمة الإدارية. يتميز بالتصميم المعماري الفريد والمساحات الخضراء الواسعة والخدمات المتكاملة المناسبة للعائلات."
+        price="من 2,800,000 جنيه" payment="10% مقدم / 7 سنوات"
+        img={GARDEN_1} img2={GARDEN_2}
         details={[
           {k:"الموقع",v:"العاصمة الإدارية الجديدة"},
           {k:"المطور",v:"City Edge Developments"},
-          {k:"الوحدات",v:"شقق • فيلات • تاون هاوس"},
-          {k:"المميزات",v:"مساحات خضراء واسعة"},
+          {k:"الوحدات",v:"شقق • تاون هاوس"},
+          {k:"المساحات",v:"من 90 م² — 250 م²"},
+          {k:"التشطيب",v:"تشطيب كامل راقي"},
+          {k:"خطة السداد",v:"10% مقدم — حتى 7 سنوات"},
         ]}
-        features={["تصميم معماري فريد","مساحات خضراء","حمامات سباحة","كلوب هاوس","موقف سيارات","قريب من الخدمات"]}
+        features={["تصميم معماري فريد","٨٠٪ مساحات خضراء","حمامات سباحة","كلوب هاوس","قريب من المدارس","موقف سيارات","أمن متكامل","مناسب للعائلات"]}
         bgDark={true}
       />
 
@@ -408,43 +416,19 @@ export default function Home() {
       <ProjectSection
         id="maqsad" num="٠٣ — العاصمة الإدارية الجديدة"
         name="المقصد" location="العاصمة الإدارية الجديدة — R3"
-        desc="المقصد هو مشروع City Edge الرائد في العاصمة الإدارية. يقع في منطقة R3 المتميزة ويقدم وحدات سكنية فاخرة بمساحات متنوعة. يتميز بالموقع الاستراتيجي القريب من أبرز معالم العاصمة ومحطات القطار السريع."
-        price="تواصل للسعر" payment="خطط سداد مرنة"
-        img="https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/11/new-capital-3.webp"
+        desc="المقصد هو المشروع الرائد من City Edge في العاصمة الإدارية. يقع في منطقة R3 المتميزة ويقدم وحدات سكنية فاخرة بمساحات متنوعة. موقع استراتيجي قريب من أبرز معالم العاصمة ومحطة القطار السريع."
+        price="من 4,200,000 جنيه" payment="10% مقدم / 10 سنوات"
+        img={MAQSAD_1} img2={MAQSAD_2}
         details={[
           {k:"الموقع",v:"العاصمة الإدارية — R3"},
           {k:"المطور",v:"City Edge Developments"},
           {k:"الوحدات",v:"شقق • دوبلكس • بنتهاوس"},
-          {k:"القرب من",v:"محطة القطار السريع"},
+          {k:"المساحات",v:"من 120 م² — 400 م²"},
+          {k:"التشطيب",v:"سوبر لوكس — كامل"},
+          {k:"خطة السداد",v:"10% مقدم — حتى 10 سنوات"},
         ]}
-        features={["منطقة R3 المتميزة","قريب من القطار السريع","إطلالات مميزة","تشطيب سوبر لوكس","حمامات سباحة","أمن متكامل"]}
+        features={["منطقة R3 المتميزة","قريب من القطار السريع","إطلالات استثنائية","تشطيب سوبر لوكس","حمامات سباحة","أمن ٢٤/٧","موقف تحت الأرض","استثمار مضمون"]}
       />
-
-      {/* ABOUT */}
-      <section id="about" className="py-20 bg-secondary border-t border-border">
-        <div className="max-w-6xl mx-auto px-6 lg:px-12 grid lg:grid-cols-2 gap-16 items-center">
-          <div>
-            <p className="text-primary text-xs font-bold tracking-widest uppercase mb-4">عن City Edge</p>
-            <h2 className="text-4xl font-black leading-tight mb-6">
-              مطور عقاري رائد<br/><span className="text-primary">في مصر</span>
-            </h2>
-            <p className="text-muted-foreground text-sm leading-relaxed mb-8">
-              City Edge Developments شركة تطوير عقاري مصرية رائدة، تأسست بشراكة بين صندوق الإسكان الاجتماعي وشركة العاصمة الإدارية للتنمية العمرانية. تتميز بمشاريعها الضخمة في العاصمة الإدارية الجديدة والمدن الجديدة.
-            </p>
-            <div className="grid grid-cols-2 gap-px bg-border">
-              {[{v:"٣",l:"مشاريع نشطة"},{v:"١٠٠٠+",l:"وحدة سكنية"},{v:"العاصمة",l:"الإدارية"},{v:"تشطيب",l:"راقي"}].map((s,i)=>(
-                <div key={i} className="bg-secondary p-6">
-                  <div className="text-2xl font-black text-primary">{s.v}</div>
-                  <div className="text-xs text-muted-foreground mt-1">{s.l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="aspect-[4/3] overflow-hidden">
-            <img src="https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/11/new-capital-3.webp" alt="City Edge" className="w-full h-full object-cover hover:scale-105 transition-transform duration-700" />
-          </div>
-        </div>
-      </section>
 
       {/* CONTACT */}
       <section id="contact" className="grid lg:grid-cols-2 min-h-[65vh]">
@@ -453,9 +437,16 @@ export default function Home() {
           <h2 className="text-4xl font-black text-white leading-tight mb-4">نحن هنا<br/>لمساعدتك</h2>
           <a href={`tel:${PHONE}`} className="text-2xl font-black text-white hover:opacity-80 transition-opacity block mb-8" dir="ltr">01123466035</a>
           <div className="space-y-0">
-            {["العالمين — العاصمة الإدارية R7","جاردن سيتي العاصمة","المقصد — العاصمة الإدارية R3"].map((p,i)=>(
+            {[
+              {n:"العالمين",l:"العاصمة الإدارية — R7 | من 3.5M"},
+              {n:"جاردن سيتي العاصمة",l:"العاصمة الإدارية | من 2.8M"},
+              {n:"المقصد",l:"العاصمة الإدارية — R3 | من 4.2M"},
+            ].map((p,i)=>(
               <div key={i} className="flex justify-between py-4 border-b border-white/10">
-                <span className="font-black text-sm text-white">{p}</span>
+                <div>
+                  <div className="font-black text-sm text-white">{p.n}</div>
+                  <div className="text-xs text-white/40 mt-0.5">{p.l}</div>
+                </div>
                 <div className="w-1.5 h-1.5 bg-white/30 self-center" />
               </div>
             ))}
