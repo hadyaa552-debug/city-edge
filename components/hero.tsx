@@ -1,98 +1,47 @@
-import { stats } from "@/lib/config";
-import { getWhatsAppUrl } from "@/lib/utils";
+"use client"
+import { useEffect, useState } from "react"
+import ContactForm from "@/components/contact-form"
 
 export default function Hero() {
+  const [visible, setVisible] = useState(false)
+  useEffect(() => { setVisible(true) }, [])
+
   return (
-    <section
-      id="home"
-      className="min-h-screen flex items-center relative overflow-hidden pt-20"
-    >
-      {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-navy/30 via-navy/90 to-navy" />
-      <div
-        className="absolute inset-0 opacity-[0.04]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(45deg, #C5A45A 0, #C5A45A 1px, transparent 1px, transparent 40px)",
-        }}
-      />
+    <section className="relative min-h-screen flex items-end overflow-hidden">
+      <div className="absolute inset-0">
+        <img src="https://grovadevelopments.com/assets/hero-left.jpg"
+          alt="Grova EastHills" className="w-full h-full object-cover" />
+        <div className="absolute inset-0" style={{background:"linear-gradient(to right, rgba(28,24,20,0.88) 40%, rgba(28,24,20,0.5) 70%, rgba(28,24,20,0.15) 100%)"}} />
+      </div>
 
-      <div className="max-w-[1200px] mx-auto px-6 relative z-10 w-full grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-        {/* Content */}
-        <div className="text-center lg:text-right">
-          <div className="inline-flex items-center gap-2 bg-gold/10 border border-gold/25 px-5 py-2 rounded-full mb-5 text-[13px] text-gold">
-            <span className="w-2 h-2 bg-gold rounded-full animate-blink" />
-            عروض لفترة محدودة
-          </div>
-
-          <h1 className="text-[clamp(32px,5vw,54px)] font-black leading-[1.3] mb-4">
-            اسكن في قلب
-            <br />
-            <span className="text-gold">مصر الجديدة</span>
-            <br />
-            مع سيتي إيدج
-          </h1>
-
-          <p className="text-[17px] text-gray-custom mb-8 max-w-[500px] leading-[1.9] mx-auto lg:mx-0 lg:mr-0">
-            مشاريع سكنية متكاملة في أميز المواقع — العلمين الجديدة والعاصمة
-            الإدارية. تصميمات عالمية وأنظمة سداد مرنة تبدأ من 5% مقدم.
-          </p>
-
-          <div className="flex gap-4 flex-wrap justify-center lg:justify-start">
-            <a
-              href="#projects"
-              className="bg-gradient-to-bl from-gold to-gold-dark text-navy px-9 py-3.5 rounded-full font-bold text-[15px] hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(197,164,90,0.3)] transition-all"
-            >
-              اكتشف المشاريع
-            </a>
-            <a
-              href={getWhatsAppUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="border-[1.5px] border-gold text-gold px-9 py-3.5 rounded-full font-semibold text-[15px] hover:bg-gold/10 transition-all"
-            >
-              تواصل واتساب
-            </a>
-          </div>
-
-          {/* Stats */}
-          <div className="flex gap-5 mt-10 flex-wrap justify-center lg:justify-start">
-            {stats.slice(0, 3).map((stat) => (
-              <div
-                key={stat.label}
-                className="bg-white/[0.04] border border-gold/10 rounded-2xl px-6 py-5 text-center flex-1 min-w-[100px]"
-              >
-                <div className="text-[28px] font-black text-gold font-[Playfair_Display]">
-                  {stat.value}
-                </div>
-                <div className="text-[12px] text-gray-custom mt-1">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Hero Image */}
-        <div className="hidden lg:block relative">
-          <div className="relative rounded-3xl overflow-hidden aspect-[4/5] border-2 border-gold/20">
-            <img
-              src="https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2025/07/Maz-Apt-2-scaled.jpg"
-              alt="مزارين العلمين الجديدة"
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <div className="absolute -bottom-5 -right-5 bg-navy/90 backdrop-blur-xl border border-gold rounded-2xl px-6 py-4 flex items-center gap-3">
-            <div className="w-11 h-11 bg-gold/15 rounded-xl flex items-center justify-center text-xl">
-              🏠
+      <div className="relative z-10 w-full max-w-7xl mx-auto px-6 lg:px-12 pb-16 lg:pb-20 pt-28">
+        <div className="grid lg:grid-cols-2 gap-16 items-end">
+          <div className={`transition-all duration-1000 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-6 h-px" style={{background:"#8B5E3C"}} />
+              <span className="text-xs font-semibold tracking-widest uppercase" style={{color:"#8B5E3C"}}>Grova Developments • Hassan Allam Holding</span>
             </div>
-            <div className="text-[13px] text-gray-custom">
-              <strong className="block text-white text-base">+10,000</strong>
-              عائلة اختارت سيتي إيدج
+            <h1 className="text-5xl lg:text-7xl font-black text-white leading-none mb-3" style={{fontFamily:"serif"}}>
+              A Signature<br/><em className="font-normal" style={{color:"#8B5E3C"}}>Living</em>
+            </h1>
+            <p className="text-white/40 text-xs tracking-widest uppercase mb-8">Grounded in What Lasts</p>
+            <p className="text-white/55 text-sm leading-relaxed mb-10 max-w-md">
+              Set across 1,260,000 m² of naturally elevated terrain in East Cairo. Seven neighbourhoods, seven landscape typologies, and an architecture that emerges from the earth.
+            </p>
+            <div className="grid grid-cols-3 gap-0 border-t pt-8" style={{borderColor:"rgba(255,255,255,0.1)"}}>
+              {[{ v: "300", l: "Feddan" }, { v: "1,217", l: "Residences" }, { v: "7", l: "Neighbourhoods" }].map((s, i) => (
+                <div key={i} className="pr-6 mr-6 last:pr-0 last:mr-0" style={{borderRight: i < 2 ? "1px solid rgba(255,255,255,0.1)" : "none"}}>
+                  <div className="text-3xl font-black text-white" style={{fontFamily:"serif"}}>{s.v}</div>
+                  <div className="text-xs text-white/40 mt-1 tracking-widest uppercase">{s.l}</div>
+                </div>
+              ))}
             </div>
+          </div>
+          <div className={`transition-all duration-1000 delay-300 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
+            <ContactForm />
           </div>
         </div>
       </div>
     </section>
-  );
+  )
 }

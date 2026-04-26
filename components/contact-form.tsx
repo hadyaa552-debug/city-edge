@@ -1,106 +1,69 @@
-"use client";
-
-import { siteConfig, projects } from "@/lib/config";
+"use client"
+import type React from "react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 export default function ContactForm() {
+  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+  const [formData, setFormData] = useState({ name: "", phone: "", unit: "" })
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    try {
+      const res = await fetch("https://formsubmit.co/ajax/apkzoz85@gmail.com", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          name: formData.name, phone: formData.phone,
+          unit: formData.unit || "Not specified",
+          _subject: "New Lead – Grova EastHills",
+          _captcha: "false", _template: "table",
+          _cc: "leads@grandeur-spaces.com",
+        }),
+      })
+      if (res.ok) { router.push("/thank-you") }
+      else throw new Error()
+    } catch { setLoading(false) }
+  }
+
   return (
-    <section id="contact" className="py-24 relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(197,164,90,0.08),transparent_70%)] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-
-      <div className="max-w-[700px] mx-auto px-6 relative z-10">
-        <div className="bg-navy-light border-2 border-gold/20 rounded-[28px] p-10 sm:p-12 text-center">
-          <h2 className="text-[30px] font-extrabold mb-2">
-            سجّل اهتمامك <span className="text-gold">الآن</span>
-          </h2>
-          <p className="text-gray-custom mb-7 text-[15px]">
-            اترك بياناتك وهنتواصل معاك في أقرب وقت بكل التفاصيل والأسعار
-          </p>
-
-          <form
-            action={`https://formsubmit.co/${siteConfig.email}`}
-            method="POST"
-          >
-            <input type="hidden" name="_subject" value={siteConfig.formSubject} />
-            <input type="hidden" name="_captcha" value="false" />
-            <input
-              type="hidden"
-              name="_next"
-              value={`https://wa.me/${siteConfig.whatsapp}?text=شكراً لتسجيل اهتمامك! هنتواصل معاك قريباً`}
-            />
-            <input type="hidden" name="_cc" value={siteConfig.ccEmail} />
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              {/* Name */}
-              <div className="text-right">
-                <label className="block text-[13px] text-gray-custom mb-1.5">
-                  الاسم بالكامل
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="اكتب اسمك"
-                  required
-                  className="w-full bg-white/5 border border-gold/15 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-gold transition-colors placeholder:text-gray-custom/50"
-                />
-              </div>
-
-              {/* Phone */}
-              <div className="text-right">
-                <label className="block text-[13px] text-gray-custom mb-1.5">
-                  رقم الموبايل
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  placeholder="01xxxxxxxxx"
-                  required
-                  className="w-full bg-white/5 border border-gold/15 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-gold transition-colors placeholder:text-gray-custom/50"
-                />
-              </div>
-
-              {/* Project Select */}
-              <div className="text-right sm:col-span-2">
-                <label className="block text-[13px] text-gray-custom mb-1.5">
-                  المشروع المهتم بيه
-                </label>
-                <select
-                  name="project"
-                  required
-                  className="w-full bg-white/5 border border-gold/15 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-gold transition-colors cursor-pointer [&>option]:bg-navy [&>option]:text-white"
-                >
-                  <option value="">اختر المشروع</option>
-                  {projects.map((p) => (
-                    <option key={p.id} value={`${p.name} - ${p.location}`}>
-                      {p.name} — {p.location}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Notes */}
-              <div className="text-right sm:col-span-2">
-                <label className="block text-[13px] text-gray-custom mb-1.5">
-                  ملاحظات إضافية
-                </label>
-                <textarea
-                  name="message"
-                  placeholder="أي تفاصيل إضافية تحب تشاركها معانا..."
-                  rows={3}
-                  className="w-full bg-white/5 border border-gold/15 rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-gold transition-colors resize-y placeholder:text-gray-custom/50"
-                />
-              </div>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-gradient-to-bl from-gold to-gold-dark text-navy py-3.5 rounded-2xl font-extrabold text-base hover:shadow-[0_10px_30px_rgba(197,164,90,0.3)] hover:-translate-y-0.5 transition-all mt-2 cursor-pointer"
-            >
-              أرسل البيانات واحجز مكانك
-            </button>
-          </form>
-        </div>
-      </div>
-    </section>
-  );
+    <Card className="shadow-2xl border-0" style={{background:"#F5F0E8"}}>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg font-black text-foreground" style={{fontFamily:"serif", fontWeight:400}}>Request Information</CardTitle>
+        <p className="text-xs text-muted-foreground tracking-wide">Our team will reach you within 24 hours</p>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-3">
+          <Input placeholder="Full Name" value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            required className="h-11 border-0 border-b border-border bg-transparent rounded-none focus-visible:ring-0 focus-visible:border-primary" />
+          <Input type="tel" placeholder="Phone Number" value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            required className="h-11 border-0 border-b border-border bg-transparent rounded-none focus-visible:ring-0 focus-visible:border-primary" dir="ltr" />
+          <Select value={formData.unit} onValueChange={(v) => setFormData({ ...formData, unit: v })}>
+            <SelectTrigger className="h-11 border-0 border-b border-border bg-transparent rounded-none focus:ring-0">
+              <SelectValue placeholder="Unit Type Preference" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="large-villa">Large Villa — 465 sqm</SelectItem>
+              <SelectItem value="medium-villa">Medium Villa — 395–397 sqm</SelectItem>
+              <SelectItem value="small-villa">Small Villa — 331.5 sqm</SelectItem>
+              <SelectItem value="twin-house">Twin House — 276–286 sqm</SelectItem>
+              <SelectItem value="town-house">Town House — 262.5 sqm</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button type="submit" disabled={loading}
+            className="w-full h-12 font-black text-xs tracking-widest uppercase" style={{background:"#4A5C3A"}}>
+            {loading ? "Sending..." : "Send Request"}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
+  )
 }

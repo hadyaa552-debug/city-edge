@@ -1,29 +1,10 @@
-import { siteConfig } from "@/lib/config";
-import { getWhatsAppUrl, getPhoneUrl } from "@/lib/utils";
-
 export default function MobileBottomBar() {
+  const msg = encodeURIComponent("I'm interested in Grova EastHills")
   return (
-    <div className="fixed bottom-0 right-0 left-0 z-[998] bg-navy/95 backdrop-blur-xl border-t border-gold/20 p-3 gap-2.5 hidden max-md:flex">
-      <a
-        href={getPhoneUrl()}
-        className="flex-1 text-center py-2.5 rounded-xl text-[13px] font-bold bg-green-custom text-white"
-      >
-        📞 اتصل
-      </a>
-      <a
-        href={getWhatsAppUrl()}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex-1 text-center py-2.5 rounded-xl text-[13px] font-bold bg-[#25D366] text-white"
-      >
-        💬 واتساب
-      </a>
-      <a
-        href="#contact"
-        className="flex-1 text-center py-2.5 rounded-xl text-[13px] font-bold bg-gradient-to-bl from-gold to-gold-dark text-navy"
-      >
-        📝 سجّل
-      </a>
+    <div className="fixed bottom-0 inset-x-0 z-40 lg:hidden grid grid-cols-2 shadow-lg">
+      <a href="tel:+201110944499" className="flex items-center justify-center py-4 text-white font-black text-xs tracking-widest uppercase" style={{background:"#4A5C3A"}}>📞 Call Now</a>
+      <a href={`https://wa.me/201110944499?text=${msg}`} target="_blank" rel="noopener noreferrer"
+        className="flex items-center justify-center py-4 bg-green-500 text-white font-black text-xs tracking-widest uppercase">💬 WhatsApp</a>
     </div>
-  );
+  )
 }

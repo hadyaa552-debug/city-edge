@@ -1,39 +1,25 @@
-import type { Metadata } from "next";
-import { siteConfig } from "@/lib/config";
-import "./globals.css";
+import type { Metadata } from "next"
+import { Cairo } from "next/font/google"
+import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/toaster"
+
+const cairo = Cairo({ subsets: ["arabic", "latin"], weight: ["300","400","600","700","900"] })
 
 export const metadata: Metadata = {
-  title: `${siteConfig.name} | عروض حصرية لفترة محدودة`,
-  description: siteConfig.description,
-  keywords:
-    "سيتي إيدج, City Edge, مزارين, العلمين الجديدة, جاردن سيتي هايتس, المقصد, العاصمة الإدارية, شقق للبيع, عقارات مصر",
-  openGraph: {
-    title: `${siteConfig.name} | عروض حصرية لفترة محدودة`,
-    description: siteConfig.description,
-    type: "website",
-  },
-};
+  title: "City Edge | العالمين – جاردن سيتي العاصمة – المقصد",
+  description: "City Edge Developments — العالمين في العاصمة الإدارية، جاردن سيتي العاصمة، المقصد. مشاريع حصرية بأسعار مميزة لفترة محدودة.",
+}
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar" dir="rtl">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&family=Playfair+Display:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body>{children}</body>
+    <html lang="ar" dir="rtl" suppressHydrationWarning>
+      <body className={cairo.className}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} disableTransitionOnChange>
+          {children}
+          <Toaster />
+        </ThemeProvider>
+      </body>
     </html>
-  );
+  )
 }
