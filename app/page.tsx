@@ -17,11 +17,21 @@ function useCountdown() {
     let target: Date
     try {
       const stored = localStorage.getItem("ced_offer_end")
-      target = stored ? new Date(stored) : (() => {
+      if (stored) {
+        const parsed = new Date(stored)
+        if (parsed.getTime() > Date.now()) {
+          target = parsed
+        } else {
+          // expired — reset
+          const t = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
+          localStorage.setItem("ced_offer_end", t.toISOString())
+          target = t
+        }
+      } else {
         const t = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000)
         localStorage.setItem("ced_offer_end", t.toISOString())
-        return t
-      })()
+        target = t
+      }
     } catch { target = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000) }
     const tick = () => {
       const diff = target.getTime() - Date.now()
@@ -174,8 +184,8 @@ function ProjectSection({ id, num, name, location, desc, price, payment, img, im
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 min-h-[75vh]">
-        <div className="relative overflow-hidden min-h-[55vw] lg:min-h-0">
+      <div className="grid lg:grid-cols-2 min-h-[40vh]">
+        <div className="relative overflow-hidden min-h-[30vw] lg:min-h-0">
           <img src={img} alt={name} className="w-full h-full object-cover absolute inset-0 hover:scale-105 transition-transform duration-700" />
           <div className="absolute inset-0" style={{background:"linear-gradient(to top,rgba(0,0,0,.5) 0%,transparent 50%)"}} />
         </div>
@@ -211,7 +221,7 @@ function ProjectSection({ id, num, name, location, desc, price, payment, img, im
 
       {/* Gallery strip */}
       {(img2 || img3) && (
-        <div className="grid grid-cols-2 h-52 gap-0.5">
+        <div className="grid grid-cols-2 h-40 gap-0.5">
           {[img2,img3].filter(Boolean).map((src,i)=>(
             <div key={i} className="overflow-hidden">
               <img src={src!} alt={`${name} ${i+2}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
@@ -260,7 +270,7 @@ export default function Home() {
   useEffect(()=>{
     try {
       if (!sessionStorage.getItem("ced_popup_seen")) {
-        const t = setTimeout(()=>{ setShowPopup(true); sessionStorage.setItem("ced_popup_seen","1") }, 3500)
+        const t = setTimeout(()=>{ setShowPopup(true); sessionStorage.setItem("ced_popup_seen","1") }, 8000)
         return ()=>clearTimeout(t)
       }
     } catch {}
@@ -276,6 +286,7 @@ export default function Home() {
   const MAQSAD_1 = "/images/maqsad-new.webp"
   const MAQSAD_2 = "/images/maqsad-new.webp"
 
+
   return (
     <>
       <Toaster />
@@ -283,16 +294,17 @@ export default function Home() {
       {showPopup && <Popup d={d} h={h} m={m} s={s} mounted={mounted} onClose={()=>setShowPopup(false)} />}
 
       {/* Announcement Bar */}
-      <div className="fixed top-0 inset-x-0 z-[60] bg-primary text-white py-2.5 px-4 flex items-center justify-between gap-3 text-xs font-bold">
-        <span>🔥 عروض حصرية لفترة محدودة على مشاريع City Edge</span>
-        <div className="flex items-center gap-1.5 font-black tabular-nums">
+      <div className="fixed top-0 inset-x-0 z-[60] bg-primary text-white py-2 px-3 lg:px-4 flex items-center justify-between gap-2 text-xs font-bold">
+        <span className="hidden sm:inline">🔥 عروض حصرية لفترة محدودة</span>
+        <span className="sm:hidden text-[10px]">🔥 عروض حصرية</span>
+        <div className="flex items-center gap-1 font-black tabular-nums text-[11px]">
           {[{v:d,l:"ي"},{v:h,l:"س"},{v:m,l:"د"},{v:s,l:"ث"}].map((t,i)=>(
             <React.Fragment key={i}>
               {i>0 && <span className="opacity-40">:</span>}
-              <span className="bg-white/15 px-2 py-0.5">{mounted ? String(t.v).padStart(2,"0") : "--"}{t.l}</span>
+              <span className="bg-white/15 px-1.5 py-0.5">{mounted ? String(t.v).padStart(2,"0") : "--"}{t.l}</span>
             </React.Fragment>
           ))}
-          <button onClick={()=>setShowPopup(true)} className="mr-3 bg-white text-primary px-3 py-0.5 font-black hover:opacity-90 transition-opacity">
+          <button onClick={()=>setShowPopup(true)} className="mr-2 bg-white text-primary px-2.5 py-0.5 font-black hover:opacity-90 transition-opacity text-[10px] lg:text-xs">
             احجز الآن
           </button>
         </div>
