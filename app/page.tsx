@@ -269,13 +269,12 @@ export default function Home() {
   const scroll = (id:string)=>document.getElementById(id)?.scrollIntoView({behavior:"smooth"})
 
   // Real City Edge images
-  const HERO_IMG = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/11/new-capital-3.webp"
-  const ALAMEIN_1 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/12/Al-Alamein-1.webp"
-  const ALAMEIN_2 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/12/Al-Alamein-2.webp"
-  const GARDEN_1 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2025/05/garden-city-capital-1.webp"
-  const GARDEN_2 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2025/05/garden-city-capital-2.webp"
-  const MAQSAD_1 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/11/new-capital-3.webp"
-  const MAQSAD_2 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/11/new-capital-2.webp"
+  const ALAMEIN_1 = "/images/alamein.jpg"
+  const ALAMEIN_2 = "/images/garden.jpg"
+  const GARDEN_1 = "/images/garden.jpg"
+  const GARDEN_2 = "/images/alamein.jpg"
+  const MAQSAD_1 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/09/al-maqsad.webp"
+  const MAQSAD_2 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/09/al-maqsad-2.webp"
 
   return (
     <>
@@ -322,7 +321,9 @@ export default function Home() {
       {/* HERO */}
       <section className="relative min-h-screen flex items-end overflow-hidden" style={{paddingTop:32}}>
         <div className="absolute inset-0">
-          <img src={HERO_IMG} alt="City Edge" className="w-full h-full object-cover" />
+          <video autoPlay muted loop playsInline className="w-full h-full object-cover">
+            <source src="/videos/hero.mp4" type="video/mp4" />
+          </video>
           <div className="absolute inset-0" style={{background:"linear-gradient(to top,rgba(10,20,50,.95) 0%,rgba(10,20,50,.55) 50%,rgba(10,20,50,.2) 100%)"}} />
           <div className="absolute inset-0 flex items-center justify-center overflow-hidden pointer-events-none">
             <span className="text-[10rem] font-black tracking-widest whitespace-nowrap" style={{color:"rgba(255,255,255,0.04)"}}>CITY EDGE</span>
