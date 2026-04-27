@@ -184,8 +184,8 @@ function ProjectSection({ id, num, name, location, desc, price, payment, img, im
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-2 min-h-[40vh]">
-        <div className="relative overflow-hidden min-h-[30vw] lg:min-h-0">
+      <div className="grid lg:grid-cols-2">
+        <div className="relative overflow-hidden aspect-[16/10] lg:aspect-auto lg:min-h-[35vh]">
           <img src={img} alt={name} className="w-full h-full object-cover absolute inset-0 hover:scale-105 transition-transform duration-700" />
           <div className="absolute inset-0" style={{background:"linear-gradient(to top,rgba(0,0,0,.5) 0%,transparent 50%)"}} />
         </div>
@@ -280,11 +280,8 @@ export default function Home() {
 
   // Real City Edge images
   const ALAMEIN_1 = "/images/alamein-new.jpg"
-  const ALAMEIN_2 = "/images/alamein-new.jpg"
   const GARDEN_1 = "/images/garden-new.jpg"
-  const GARDEN_2 = "/images/garden-new.jpg"
   const MAQSAD_1 = "/images/maqsad-new.webp"
-  const MAQSAD_2 = "/images/maqsad-new.webp"
 
 
   return (
@@ -394,7 +391,7 @@ export default function Home() {
         name="العالمين" location="العاصمة الإدارية الجديدة — R7"
         desc="العالمين هو مشروع سكني فاخر من City Edge في قلب العاصمة الإدارية الجديدة. يقع في المنطقة السكنية R7 ويقدم وحدات متنوعة بتشطيبات راقية ومساحات خضراء واسعة. مشروع متكامل الخدمات مع موقف سيارات وأمن ٢٤ ساعة."
         price="من 3,500,000 جنيه" payment="10% مقدم / 8 سنوات"
-        img={ALAMEIN_1} img2={ALAMEIN_2}
+        img={ALAMEIN_1}
         details={[
           {k:"الموقع",v:"العاصمة الإدارية — R7"},
           {k:"المطور",v:"City Edge Developments"},
@@ -412,7 +409,7 @@ export default function Home() {
         name="جاردن سيتي العاصمة" location="العاصمة الإدارية الجديدة"
         desc="جاردن سيتي العاصمة من City Edge — مجتمع سكني متكامل يوفر بيئة خضراء راقية في قلب العاصمة الإدارية. يتميز بالتصميم المعماري الفريد والمساحات الخضراء الواسعة والخدمات المتكاملة المناسبة للعائلات."
         price="من 2,800,000 جنيه" payment="10% مقدم / 7 سنوات"
-        img={GARDEN_1} img2={GARDEN_2}
+        img={GARDEN_1}
         details={[
           {k:"الموقع",v:"العاصمة الإدارية الجديدة"},
           {k:"المطور",v:"City Edge Developments"},
@@ -431,7 +428,7 @@ export default function Home() {
         name="المقصد" location="العاصمة الإدارية الجديدة — R3"
         desc="المقصد هو المشروع الرائد من City Edge في العاصمة الإدارية. يقع في منطقة R3 المتميزة ويقدم وحدات سكنية فاخرة بمساحات متنوعة. موقع استراتيجي قريب من أبرز معالم العاصمة ومحطة القطار السريع."
         price="من 4,200,000 جنيه" payment="10% مقدم / 10 سنوات"
-        img={MAQSAD_1} img2={MAQSAD_2}
+        img={MAQSAD_1}
         details={[
           {k:"الموقع",v:"العاصمة الإدارية — R3"},
           {k:"المطور",v:"City Edge Developments"},
