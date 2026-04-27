@@ -269,12 +269,12 @@ export default function Home() {
   const scroll = (id:string)=>document.getElementById(id)?.scrollIntoView({behavior:"smooth"})
 
   // Real City Edge images
-  const ALAMEIN_1 = "/images/alamein.jpg"
-  const ALAMEIN_2 = "/images/garden.jpg"
-  const GARDEN_1 = "/images/garden.jpg"
-  const GARDEN_2 = "/images/alamein.jpg"
-  const MAQSAD_1 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/09/al-maqsad.webp"
-  const MAQSAD_2 = "https://cityedgedevelopments.com/cityedgedevelopmentswordpress/wp-content/uploads/2024/09/al-maqsad-2.webp"
+  const ALAMEIN_1 = "/images/alamein-new.jpg"
+  const ALAMEIN_2 = "/images/alamein-new.jpg"
+  const GARDEN_1 = "/images/garden-new.jpg"
+  const GARDEN_2 = "/images/garden-new.jpg"
+  const MAQSAD_1 = "/images/maqsad-new.webp"
+  const MAQSAD_2 = "/images/maqsad-new.webp"
 
   return (
     <>
