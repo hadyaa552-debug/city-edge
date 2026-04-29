@@ -3,7 +3,7 @@ import { getWhatsAppUrl } from "@/lib/utils";
 export default function WhatsAppFloat() {
   return (
     <a
-      href={getWhatsAppUrl("201123466035", "مرحباً، أنا مهتم بمشاريع City Edge الحصرية")}
+      href={getWhatsAppUrl("201008900076", "مرحباً، أنا مهتم بمشاريع City Edge الحصرية")}
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-24 left-6 z-50 w-12 h-12 bg-green-500 rounded-full hidden lg:flex items-center justify-center shadow-xl hover:scale-110 transition-transform"

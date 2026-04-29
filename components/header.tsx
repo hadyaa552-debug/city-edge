@@ -39,12 +39,12 @@ export default function Header() {
           ))}
         </nav>
         <div className="flex items-center gap-4">
-          <a href="tel:+201110944499" className={`hidden sm:block text-sm font-black tracking-wide transition-colors ${scrolled ? "text-foreground" : "text-white"}`} dir="ltr">01110944499</a>
+          <a href="tel:+201008900076" className={`hidden sm:block text-sm font-black tracking-wide transition-colors ${scrolled ? "text-foreground" : "text-white"}`} dir="ltr">01008900076</a>
           <a href="#contact" onClick={(e) => { e.preventDefault(); document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }) }}
             className="hidden sm:block bg-primary text-primary-foreground px-6 py-2.5 text-xs font-black tracking-widest uppercase hover:bg-primary/90 transition-colors">
             Enquire
           </a>
-          <a href="tel:+201110944499" className="sm:hidden bg-primary text-primary-foreground p-2.5"><Phone className="w-5 h-5" /></a>
+          <a href="tel:+201008900076" className="sm:hidden bg-primary text-primary-foreground p-2.5"><Phone className="w-5 h-5" /></a>
         </div>
       </div>
     </header>

@@ -15,11 +15,11 @@ export default function ThankYou() {
           <p className="text-muted-foreground text-sm leading-relaxed">تم استلام طلبك. سيتواصل معك مستشارنا العقاري خلال ٢٤ ساعة.</p>
         </div>
         <div className="border border-border p-5 text-right space-y-3">
-          <a href="tel:+201123466035" className="flex justify-between py-2 border-b border-border hover:text-primary transition-colors">
+          <a href="tel:+201008900076" className="flex justify-between py-2 border-b border-border hover:text-primary transition-colors">
             <span className="text-xs text-muted-foreground">اتصال مباشر</span>
-            <span className="font-bold text-sm" dir="ltr">01123466035</span>
+            <span className="font-bold text-sm" dir="ltr">01008900076</span>
           </a>
-          <a href="https://wa.me/201123466035" target="_blank" rel="noopener noreferrer" className="flex justify-between py-2 hover:text-primary transition-colors">
+          <a href="https://wa.me/201008900076" target="_blank" rel="noopener noreferrer" className="flex justify-between py-2 hover:text-primary transition-colors">
             <span className="text-xs text-muted-foreground">رد فوري</span>
             <span className="font-bold text-sm text-green-600">واتساب</span>
           </a>

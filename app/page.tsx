@@ -4,8 +4,8 @@ import { useRouter } from "next/navigation"
 import { useToast } from "@/hooks/use-toast"
 import { Toaster } from "@/components/toaster"
 
-const PHONE = "+201123466035"
-const WA = "https://wa.me/201123466035"
+const PHONE = "+201008900076"
+const WA = "https://wa.me/201008900076"
 const EMAIL = "apkzoz85@gmail.com"
 
 // ── Countdown ────────────────────────────────────────
@@ -88,7 +88,7 @@ function LeadForm({ subject, dark=false }: { subject: string; dark?: boolean }) 
         className={`w-full bg-transparent border-0 border-b py-3 text-sm outline-none cursor-pointer ${dark?"border-white/25 text-white/50":"border-border text-muted-foreground"}`}>
         <option value="">اختر المشروع</option>
         <option value="العالمين">العالمين — العاصمة الإدارية | من 3.5 مليون جنيه</option>
-        <option value="جاردن سيتي العاصمة">جاردن سيتي العاصمة | من 2.8 مليون جنيه</option>
+        <option value="جاردن سيتي العاصمة">جاردن سيتي العاصمة | من 7 مليون جنيه</option>
         <option value="المقصد">المقصد — العاصمة الإدارية | من 4.2 مليون جنيه</option>
       </select>
       <div className="h-4"/>
@@ -129,7 +129,7 @@ function Popup({ d,h,m,s,mounted, onClose }: { d:number;h:number;m:number;s:numb
           ))}
         </div>
         <div className="px-6 pt-4 pb-2 flex flex-wrap gap-2">
-          {["🏙️ العالمين — من 3.5M","🌿 جاردن سيتي — من 2.8M","🏛️ المقصد — من 4.2M"].map((p,i)=>(
+          {["🏙️ العالمين — من 3.5M","🌿 جاردن سيتي — من 7M","🏛️ المقصد — من 4.2M"].map((p,i)=>(
             <span key={i} className="border border-primary/20 text-primary text-xs font-bold px-3 py-1.5">{p}</span>
           ))}
         </div>
@@ -320,7 +320,7 @@ export default function Home() {
           ))}
         </nav>
         <div className="flex items-center gap-3">
-          <a href={`tel:${PHONE}`} className={`hidden sm:block text-sm font-black transition-colors ${scrolled?"text-foreground":"text-white"}`} dir="ltr">01123466035</a>
+          <a href={`tel:${PHONE}`} className={`hidden sm:block text-sm font-black transition-colors ${scrolled?"text-foreground":"text-white"}`} dir="ltr">01008900076</a>
           <button onClick={()=>setShowPopup(true)} className="bg-primary text-white px-5 py-2.5 text-xs font-black tracking-widest hover:opacity-85 transition-opacity">
             احجز الآن
           </button>
@@ -355,7 +355,7 @@ export default function Home() {
                 العالمين، جاردن سيتي العاصمة، والمقصد — مشاريع متميزة من City Edge في أرقى مناطق العاصمة الإدارية الجديدة.
               </p>
               <div className="flex flex-wrap gap-3 mb-10">
-                {[{n:"العالمين — من 3.5M",id:"alamein"},{n:"جاردن سيتي — من 2.8M",id:"garden"},{n:"المقصد — من 4.2M",id:"maqsad"}].map(p=>(
+                {[{n:"العالمين — من 3.5M",id:"alamein"},{n:"جاردن سيتي — من 7M",id:"garden"},{n:"المقصد — من 4.2M",id:"maqsad"}].map(p=>(
                   <button key={p.id} onClick={()=>scroll(p.id)}
                     className="border border-white/20 text-white/70 px-4 py-2 text-xs font-bold hover:border-primary hover:text-primary transition-colors">
                     {p.n}
@@ -408,7 +408,7 @@ export default function Home() {
         id="garden" num="٠٢ — العاصمة الإدارية الجديدة"
         name="جاردن سيتي العاصمة" location="العاصمة الإدارية الجديدة"
         desc="جاردن سيتي العاصمة من City Edge — مجتمع سكني متكامل يوفر بيئة خضراء راقية في قلب العاصمة الإدارية. يتميز بالتصميم المعماري الفريد والمساحات الخضراء الواسعة والخدمات المتكاملة المناسبة للعائلات."
-        price="من 2,800,000 جنيه" payment="10% مقدم / 7 سنوات"
+        price="من 7,000,000 جنيه" payment="10% مقدم / 7 سنوات"
         img={GARDEN_1}
         details={[
           {k:"الموقع",v:"العاصمة الإدارية الجديدة"},
@@ -445,11 +445,11 @@ export default function Home() {
         <div className="bg-primary px-8 lg:px-14 py-20 flex flex-col justify-center">
           <p className="text-white/50 text-xs font-bold tracking-widest uppercase mb-5">تواصل معنا</p>
           <h2 className="text-4xl font-black text-white leading-tight mb-4">نحن هنا<br/>لمساعدتك</h2>
-          <a href={`tel:${PHONE}`} className="text-2xl font-black text-white hover:opacity-80 transition-opacity block mb-8" dir="ltr">01123466035</a>
+          <a href={`tel:${PHONE}`} className="text-2xl font-black text-white hover:opacity-80 transition-opacity block mb-8" dir="ltr">01008900076</a>
           <div className="space-y-0">
             {[
               {n:"العالمين",l:"العاصمة الإدارية — R7 | من 3.5M"},
-              {n:"جاردن سيتي العاصمة",l:"العاصمة الإدارية | من 2.8M"},
+              {n:"جاردن سيتي العاصمة",l:"العاصمة الإدارية | من 7M"},
               {n:"المقصد",l:"العاصمة الإدارية — R3 | من 4.2M"},
             ].map((p,i)=>(
               <div key={i} className="flex justify-between py-4 border-b border-white/10">

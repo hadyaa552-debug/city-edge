@@ -7,7 +7,7 @@ const units = [
 ]
 
 export default function Residences() {
-  const phone = "+201110944499"
+  const phone = "+201008900076"
   const waLink = `https://wa.me/${phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent("I'm interested in Grova EastHills residences. Please send details.")}`
 
   return (

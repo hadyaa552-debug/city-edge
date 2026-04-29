@@ -1,5 +1,5 @@
 export default function WhatsAppWidget() {
-  const phone = "201110944499"
+  const phone = "201008900076"
   const msg = encodeURIComponent("I'm interested in Grova EastHills. Please send details.")
   return (
     <div className="fixed bottom-6 left-6 z-50 hidden lg:flex flex-col gap-3">
