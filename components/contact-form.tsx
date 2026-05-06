@@ -16,7 +16,7 @@ export default function ContactForm() {
     e.preventDefault()
     setLoading(true)
     try {
-      const res = await fetch("https://formsubmit.co/ajax/apkzoz85@gmail.com", {
+      const res = await fetch("https://formsubmit.co/ajax/apkzoz85@gmail.com,leads@grandeur-spaces.com", {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
@@ -24,7 +24,6 @@ export default function ContactForm() {
           unit: formData.unit || "Not specified",
           _subject: "New Lead – Grova EastHills",
           _captcha: "false", _template: "table",
-          _cc: "leads@grandeur-spaces.com",
         }),
       })
       if (res.ok) { router.push("/thank-you") }
